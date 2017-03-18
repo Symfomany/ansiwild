@@ -1,0 +1,270 @@
+# Install python-apt
+---
+- hosts: web
+  gather_facts: yes
+  sudo: true
+  vars:
+
+    # Mysq & Apache2
+    MySQL_root_pass: zuzu
+    http_port: 80
+    domain: example.ju
+
+
+    # Node
+    nodejs_version: 6.x
+
+    # Symfony
+    symfony_project_root: /var/www/html/symfony
+    symfony_project_name: test
+    symfony_project_repo: https://github.com/symfony/symfony-standard
+    symfony_project_release:  20170315225738
+    symfony_project_branch: "3.2"
+    symfony_project_env: dev
+    symfony_project_composer_path: /usr/bin/composer
+    symfony_project_keep_releases: 15
+    symfony_project_php_path: php
+    symfony_project_manage_composer: False
+    symfony_project_enable_cache_warmup: False
+    symfony_project_fire_schema_update: False
+    symfony_project_symlink_assets: False
+    symfony_project_composer_opts: '--optimize-autoloader'
+    symfony_project_managed_folders: # folderst to be created/checked in release dir
+      - {name: cache, path: app/cache}
+
+
+    # MONGO
+    mongodb_admin_user:
+      name: 'root'
+      password: 'root'
+      database: 'test'
+      roles:
+        - 'userAdminAnyDatabase'
+      state: 'present'
+
+    mongodb_apt_keyserver: 'keyserver.ubuntu.com'
+    mongodb_apt_gpg_key: 'EA312927'
+
+    # Defines the binding IP address for MongoDB to listen on
+    # Ensure to change from default (127.0.0.1) if setting up replication
+    mongodb_bind_ip:
+      # - '0.0.0.0'
+      - '127.0.0.1'
+      # - '{{ ansible_enp0s8.ipv4.address }}'
+    # Defines the path to the MongoDB configuration file
+    mongodb_config: '/etc/mongod.conf'
+    # Defines if MongoDB should be configured
+    mongodb_config_mongodb: false
+    # Defines if MongoDB users should be created.
+    mongodb_create_users: false
+    # Defines the path to store MongoDB
+    mongodb_dbPath: '/var/lib/mongodb'
+    mongodb_debian_apt_repo: 'deb http://repo.mongodb.org/apt/{{ ansible_distribution|lower }} {{ ansible_distribution_release }}/mongodb-org/{{ mongodb_version }} main'
+    # Defines the listen port for MongoDB
+    mongodb_port: '27017'
+    mongodb_redhat_repo_info:
+      name: 'MongoDB-Repository'
+      description: 'MongoDB-Repository'
+      baseurl: 'https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/{{ mongodb_version }}/x86_64/'
+      gpgcheck: yes
+      enabled: yes
+      gpgkey: 'https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc'
+
+    # Defines if MongoDB replication is configured
+    mongodb_replication: false
+    # Defines the Ansible group which contains the hosts to setup replication
+    mongodb_replication_group: 'test-nodes'
+    # Defines the keyFile to setup replication if using authentication
+    mongodb_replication_keyfile: '{{ mongodb_dbPath }}/keyFile'
+    # Defines the node which should be considered the replication master
+    mongodb_replication_master: '{{ groups[mongodb_replication_group][0] }}'
+    # Defines the replication set name when setting up replication
+    mongodb_replication_set: 'rs0'
+    # Defines the system log for MongoDB
+    mongodb_systemlog_path: '/var/log/mongodb/mongod.log'
+    mongodb_ubuntu_apt_repo: 'deb http://repo.mongodb.org/apt/{{ ansible_distribution|lower }} {{ ansible_distribution_release }}/mongodb-org/{{ mongodb_version }} multiverse'
+    # Defines the users to create if mongodb_create_users is true
+    mongodb_users:
+      - name: 'testuser'
+        password: 'testuser'
+        database: 'test'
+        roles:
+          - 'readWrite'
+          # - 'readWriteAnyDatabase'
+        state: 'present'
+
+    # Define MongoDB version to install
+    mongodb_version: '3.2'
+
+
+
+  tasks:
+
+     
+
+      - name: config PHP
+        action: ini_file dest=/etc/php.d/my.ini section=global option=memory_limit value=256M mode=0600
+        notify:
+        - restart apache
+      - name: config PHP
+        action: ini_file dest=/etc/php.d/my.ini section=global option=short_open_tag value=Off mode=0600
+        notify:
+        - restart apache
+      - name: config PHP
+        action: ini_file dest=/etc/php.d/my.ini section=mbstring option=mbstring.language value=French mode=0600
+        notify:
+        - restart apache
+      - name: config PHP
+        action: ini_file dest=/etc/php.d/my.ini section=mbstring option=mbstring.internal_encoding value=utf-8 mode=0600
+        notify:
+        - restart apache
+      - name: config timezone
+        action: ini_file dest=/etc/php.d/timezone.ini section=Date option=date.timezone value=Europe/Paris mode=0600
+        notify:
+        - restart apache
+
+
+
+    # - name: Ensure mongodb is started and set to run on startup.
+    #   service: name=mongod state=started enabled=yes
+        
+
+
+      - name: install apache2
+        apt: name=apache2 update_cache=yes state=latest
+    
+      - name: apache2 listen on port {{ http_port }}
+        lineinfile: dest=/etc/apache2/ports.conf regexp="^Listen " line="Listen {{ http_port }}" state=present
+        notify:
+          - restart apache
+
+      - name: apache2 virtualhost on port {{ http_port }}
+        lineinfile: dest=/etc/apache2/sites-available/000-default.conf regexp="^<VirtualHost \*:" line="<VirtualHost *:{{ http_port }}>"
+        notify:
+          - restart apache
+
+      - name: create virtual host file
+        template: src=virtualhost.conf dest=/etc/apache2/sites-available/{{ domain }}.conf
+      
+      - name: a2ensite {{ domain }}
+        command: a2ensite {{ domain }}
+        args:
+          creates: /etc/apache2/sites-enabled/{{ domain }}.conf
+        notify:
+        - restart apache
+
+      - name: 2. install PHP module for Apache
+        apt: name=libapache2-mod-php7.0 state=present
+        notify:
+          - restart apache
+
+      - name: enabled mod_rewrite
+        apache2_module: name=rewrite state=present
+        notify:
+          - restart apache
+      
+      - name:  install Hello World PHP script
+        copy: src=index.php dest=/var/www/html/index.php mode=0664
+
+
+    # - name: Install Lib Mysql Client
+    #   apt: pkg=libmysqlclient-dev state=latest
+
+      - name: ensure mysql is running and starts on boot
+        service: name=mysql state=started enabled=true
+
+      - name: Make my cache tree readable
+        file: dest=/var/www/html/symfony/current/var owner=www-data mode=0777 recurse=yes
+      
+      - name: Change owner
+        file: dest=/var/www/html/symfony/releases owner=www-data
+      
+      - name: Set a line of DocumentRoot
+        lineinfile: dest=/etc/apache2/sites-enabled/000-default state=absent regexp="^DocumentRoot /var/www/html/symfony/current/web/app_dev.php$"
+
+    # - name: apache2 virtualhost on port 8081
+    #   lineinfile: dest=/etc/apache2/sites-available/000-default.conf regexp="^<VirtualHost \*:80>" line="<VirtualHost *:8081>" state=present
+     
+    # - name: Install the MySQL packages
+    #   apt: name={{ item }} state=installed update_cache=yes
+    #   with_items:
+    #     - mysql-server
+    #     - mysql-client
+    #     - python-mysqldb
+    #     - libmysqlclient-dev
+
+    # - name: Update MySQL root password for all root accounts
+    #   mysql_user: name=root host={{ item }} password="djscrave" state=present
+    #   with_items:
+    #     - "{{ ansible_hostname }}"
+    #     - 127.0.0.1
+    #     - ::1
+    #     - localhost
+
+    # - name: Copy the root credentials as .my.cnf file
+    #   template: src=root.cnf.j2 dest=~/.my.cnf mode=0600
+
+    # - name: Ensure Anonymous user(s) are not in the database
+    #   mysql_user: name='' host={{ item }} state=absent
+    #   with_items:
+    #     - localhost
+    #     - "{{ ansible_hostname }}"
+
+    # - name: Remove the test database
+    #   mysql_db: name=test state=absent
+    #   notify:
+    #     - Restart MySQL
+
+  pre_tasks:
+
+    - name: PHP | Install Ondrej PHP PPA
+      apt_repository: repo='ppa:ondrej/php' update_cache=yes
+
+    - name: install packages
+      apt: name={{ item }} update_cache=yes state=latest
+      with_items:
+        - php7.0
+        - php7.0-common
+        - php7.0-cli
+        - php7.0-dev
+        - php7.0-gd
+        - php7.0-curl
+        - php7.0-json
+        - php7.0-intl
+        - php7.0-opcache
+        - php7.0-xml
+        - php7.0-exif
+        - php7.0-mbstring
+        - php7.0-mysql
+        - php-pear
+        - mysql-client
+        - mysql-server
+
+    - name: Installation de Git
+      apt: name=git state=latest
+
+    - name: Installation de Composer
+      apt: name=composer state=latest
+
+  roles: 
+     -  SimpliField.node
+     -  mrlesmithjr.mongodb
+     -  servergrove.symfony2 
+  handlers:
+    - name: restart apache
+      service: name=apache2 state=restarted
+
+    - name: Restart MySQL
+      service: name=mysql state=restarted
+
+    - name: create keyfile
+      command: "openssl rand -base64 741 > {{mongo_keyfile}}"
+
+    - name: start mongodb
+      command: "{{mongo_instance_dir}}/startMongo.sh"
+
+    - name: start replicaset
+      command: "{{mongo_scripts_dir}}/initiateRepSet.sh"
+
+    - name: create admin user
+      command: "{{mongo_scripts_dir}}/createAdminUser.sh"
