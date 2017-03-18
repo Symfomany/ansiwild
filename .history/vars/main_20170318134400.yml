@@ -1,0 +1,3 @@
+---
+# vars file for ansiwild
+# vars and defaults house variables, but variables in vars have a higher priority, which means that they are more difficult to override

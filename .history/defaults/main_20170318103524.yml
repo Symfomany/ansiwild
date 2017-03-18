@@ -1,0 +1,4 @@
+---
+#  Default variables used by a role
+# If not used, use some variabloes 
+packer_version: "0.6"

@@ -1,0 +1,2 @@
+# files is where you put files that need to be added to the machine being provisioned, without modification. Most of the time, files in files are referenced by copy tasks.
+
