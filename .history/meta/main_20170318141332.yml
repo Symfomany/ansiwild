@@ -1,8 +1,8 @@
 ---
 - galaxy_info:
-    author: Symfomany
-    description: AnsiWild
-    company: WildCodeSchool
+      author: Symfomany
+      description: AnsiWild
+      company: WildCodeSchool
 
     # If the issue tracker for your role is not on github, uncomment the
     # next line and provide a value
@@ -127,86 +127,86 @@
     #  - 9.2
     #  - 9.3
     - name: Ubuntu
-    versions:
-    - all
-    - lucid
-    - maverick
-    - natty
-    - oneiric
-    - precise
-    - quantal
-    - raring
-    - saucy
-    - trusty
-    #  - utopic
-    #  - vivid
-    #  - wily
-    #  - xenial
-    #  - yakkety
-    #- name: Debian
-    #  versions:
-    #  - all
-    #  - etch
-    #  - jessie
-    #  - lenny
-    #  - sid
-    #  - squeeze
-    #  - stretch
-    #  - wheezy
-    #- name: Alpine
-    #  versions:
-    #  - all
-    #  - any
-    #- name: EL
-    #  versions:
-    #  - all
-    #  - 5
-    #  - 6
-    #  - 7
-    #- name: Windows
-    #  versions:
-    #  - all
-    #  - 2012R2
-    #- name: SmartOS
-    #  versions:
-    #  - all
-    #  - any
-    #- name: opensuse
-    #  versions:
-    #  - all
-    #  - 12.1
-    #  - 12.2
-    #  - 12.3
-    #  - 13.1
-    #  - 13.2
-    #- name: SLES
-    #  versions:
-    #  - all
-    #  - 10SP3
-    #  - 10SP4
-    #  - 11
-    #  - 11SP1
-    #  - 11SP2
-    #  - 11SP3
-    #  - 11SP4
-    #  - 12
-    #  - 12SP1
-    #- name: GenericUNIX
-    #  versions:
-    #  - all
-    #  - any
-    #- name: Solaris
-    #  versions:
-    #  - all
-    #  - 10
-    #  - 11.0
-    #  - 11.1
-    #  - 11.2
-    #  - 11.3
-    #- name: eos
-    #  versions:
-    #  - all
-    #  - Any
+      versions:
+      - all
+      - lucid
+      - maverick
+      - natty
+      - oneiric
+      - precise
+      - quantal
+      - raring
+      - saucy
+      - trusty
+      #  - utopic
+      #  - vivid
+      #  - wily
+      #  - xenial
+      #  - yakkety
+      #- name: Debian
+      #  versions:
+      #  - all
+      #  - etch
+      #  - jessie
+      #  - lenny
+      #  - sid
+      #  - squeeze
+      #  - stretch
+      #  - wheezy
+      #- name: Alpine
+      #  versions:
+      #  - all
+      #  - any
+      #- name: EL
+      #  versions:
+      #  - all
+      #  - 5
+      #  - 6
+      #  - 7
+      #- name: Windows
+      #  versions:
+      #  - all
+      #  - 2012R2
+      #- name: SmartOS
+      #  versions:
+      #  - all
+      #  - any
+      #- name: opensuse
+      #  versions:
+      #  - all
+      #  - 12.1
+      #  - 12.2
+      #  - 12.3
+      #  - 13.1
+      #  - 13.2
+      #- name: SLES
+      #  versions:
+      #  - all
+      #  - 10SP3
+      #  - 10SP4
+      #  - 11
+      #  - 11SP1
+      #  - 11SP2
+      #  - 11SP3
+      #  - 11SP4
+      #  - 12
+      #  - 12SP1
+      #- name: GenericUNIX
+      #  versions:
+      #  - all
+      #  - any
+      #- name: Solaris
+      #  versions:
+      #  - all
+      #  - 10
+      #  - 11.0
+      #  - 11.1
+      #  - 11.2
+      #  - 11.3
+      #- name: eos
+      #  versions:
+      #  - all
+      #  - Any
 
     galaxy_tags: ['PHP7', 'Symfony2', 'Composer', 'GIT', 'Apache2']
       # List tags for your role here, one per line. A tag is
