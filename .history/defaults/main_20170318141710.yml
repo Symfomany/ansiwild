@@ -1,7 +1,7 @@
 ---
 #  Default variables used by a role
 # If not override, use this variables
-
+ss
  # Mysq & Apache2
 MySQL_root_pass: zuzu
 http_port: 80

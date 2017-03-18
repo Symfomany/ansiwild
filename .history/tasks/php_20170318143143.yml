@@ -1,0 +1,27 @@
+---
+# tasks file for ansiwild
+- name: config PHP
+  action: ini_file dest=/etc/php.d/my.ini section=global option=memory_limit value=512M mode=0600
+  notify:
+    - restart apache
+
+- name: config PHP
+  action: ini_file dest=/etc/php.d/my.ini section=global option=short_open_tag value=Off mode=0600
+  notify:
+    - restart apache
+
+- name: config PHP
+  action: ini_file dest=/etc/php.d/my.ini section=mbstring option=mbstring.language value=French mode=0600
+  notify:
+  - restart apache
+
+- name: config PHP
+  action: ini_file dest=/etc/php.d/my.ini section=mbstring option=mbstring.internal_encoding value=utf-8 mode=0600
+  notify:
+    - restart apache
+
+- name: config timezone
+  action: ini_file dest=/etc/php.d/timezone.ini section=Date option=date.timezone value=Europe/Paris mode=0600
+  notify:
+    - restart apache
+

@@ -24,7 +24,6 @@
         - php7.0-exif
         - php7.0-mbstring
         - php7.0-mysql
-        - php7.0-mcrypt
         - php-pear
         - mysql-client
         - mysql-server
