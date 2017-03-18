@@ -2,8 +2,7 @@
 - hosts: web
   gather_facts: yes
   sudo: true
-  # roles:
-  #   - ansiwild
+
   pre_tasks:
 
     - name: PHP | Install Ondrej PHP PPA
@@ -35,3 +34,8 @@
 
     - name: Installation de Composer
       apt: name=composer state=latest
+
+
+- include ../tasks/main.yml
+  # roles:
+  #   - ansiwild
